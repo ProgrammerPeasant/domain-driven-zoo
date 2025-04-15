@@ -94,15 +94,15 @@ public class EnclosureController {
         }
         return ResponseEntity.notFound().build();
     }
-
-    @PutMapping("/{id}/clean")
-    @Operation(summary = "Произвести уборку в вольере")
-    public ResponseEntity<EnclosureDTO> cleanEnclosure(@PathVariable UUID id) {
-        Optional<Enclosure> enclosureOpt = enclosureRepository.findById(new EnclosureId(id));
-        if (enclosureOpt.isPresent()) {
-            Enclosure enclosure = enclosureOpt.get();
-            enclosure.clean();
-            enclosureRepository.save(enclosure);
-            return ResponseEntity.ok(enclosureMapper.toDto(enclosure));
-        }
-        return ResponseEntity.notFound().buil
+}
+//    @PutMapping("/{id}/clean")
+//    @Operation(summary = "Произвести уборку в вольере")
+//    public ResponseEntity<EnclosureDTO> cleanEnclosure(@PathVariable UUID id) {
+//        Optional<Enclosure> enclosureOpt = enclosureRepository.findById(new EnclosureId(id));
+//        if (enclosureOpt.isPresent()) {
+//            Enclosure enclosure = enclosureOpt.get();
+//            enclosure.clean();
+//            enclosureRepository.save(enclosure);
+//            return ResponseEntity.ok(enclosureMapper.toDto(enclosure));
+//        }
+//        return ResponseEntity.notFound().buil
