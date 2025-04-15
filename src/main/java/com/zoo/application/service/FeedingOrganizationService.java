@@ -58,12 +58,16 @@ public class FeedingOrganizationService {
         return true;
     }
 
+    public List<FeedingSchedule> getScheduleForAnimal(UUID animalId) {
+        return feedingScheduleRepository.findByAnimalId(animalId);
+    }
+
     public List<FeedingSchedule> getAllUpcomingFeedings() {
         LocalDateTime now = LocalDateTime.now();
         return feedingScheduleRepository.findDueFeedings(now, now.plusDays(1));
     }
 
-    @Scheduled(fixedRate = 60000) // проверять можно наприер каждую минуту
+    @Scheduled(fixedRate = 60000) // Проверка каждую минуту
     public void checkDueFeedings() {
         LocalDateTime now = LocalDateTime.now();
         List<FeedingSchedule> dueFeedings = feedingScheduleRepository.findDueFeedings(
