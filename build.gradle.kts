@@ -14,25 +14,19 @@ repositories {
 }
 
 dependencies {
-    // Spring Boot
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
-    // Swagger UI
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
-    // Lombok
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
 
-    // Kotlin standard library
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    // Jackson for Kotlin
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-    // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

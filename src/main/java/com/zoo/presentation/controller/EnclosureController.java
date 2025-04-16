@@ -2,8 +2,11 @@ package com.zoo.presentation.controller;
 
 import com.zoo.application.dto.EnclosureDTO;
 import com.zoo.application.mapper.EnclosureMapper;
+import com.zoo.domain.model.Animal;
 import com.zoo.domain.model.Enclosure;
+import com.zoo.domain.repository.AnimalRepository;
 import com.zoo.domain.repository.EnclosureRepository;
+import com.zoo.domain.valueobject.AnimalId;
 import com.zoo.domain.valueobject.EnclosureId;
 import com.zoo.domain.valueobject.EnclosureType;
 import com.zoo.presentation.api.CreateEnclosureRequest;
@@ -21,12 +24,19 @@ import java.util.UUID;
 @RequestMapping("/api/enclosures")
 @Tag(name = "Enclosures", description = "API для работы с вольерами зоопарка")
 public class EnclosureController {
+
     private final EnclosureRepository enclosureRepository;
     private final EnclosureMapper enclosureMapper;
+    private final AnimalRepository animalRepository;
 
-    public EnclosureController(EnclosureRepository enclosureRepository, EnclosureMapper enclosureMapper) {
+    public EnclosureController(
+            EnclosureRepository enclosureRepository,
+            EnclosureMapper enclosureMapper,
+            AnimalRepository animalRepository
+    ) {
         this.enclosureRepository = enclosureRepository;
         this.enclosureMapper = enclosureMapper;
+        this.animalRepository = animalRepository;
     }
 
     @GetMapping
@@ -94,15 +104,60 @@ public class EnclosureController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PutMapping("/{id}/clean")
+    @Operation(summary = "Произвести уборку в вольере")
+    public ResponseEntity<EnclosureDTO> cleanEnclosure(@PathVariable UUID id) {
+        Optional<Enclosure> enclosureOpt = enclosureRepository.findById(new EnclosureId(id));
+        if (enclosureOpt.isPresent()) {
+            Enclosure enclosure = enclosureOpt.get();
+            enclosure.clean();
+            enclosureRepository.save(enclosure);
+            return ResponseEntity.ok(enclosureMapper.toDto(enclosure));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/{id}/add-animal/{animalId}")
+    @Operation(summary = "Добавить животное в вольер")
+    public ResponseEntity<EnclosureDTO> addAnimalToEnclosure(@PathVariable UUID id, @PathVariable UUID animalId) {
+        Optional<Enclosure> enclosureOpt = enclosureRepository.findById(new EnclosureId(id));
+        Optional<Animal> animalOpt = animalRepository.findById(new AnimalId(animalId));
+
+        if (enclosureOpt.isPresent() && animalOpt.isPresent()) {
+            Enclosure enclosure = enclosureOpt.get();
+            Animal animal = animalOpt.get();
+
+            if (!enclosure.addAnimal(animal)) {
+                return ResponseEntity.badRequest().body(enclosureMapper.toDto(enclosure));
+            }
+
+            animalRepository.save(animal);
+            enclosureRepository.save(enclosure);
+            return ResponseEntity.ok(enclosureMapper.toDto(enclosure));
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/{id}/remove-animal/{animalId}")
+    @Operation(summary = "Удалить животное из вольера")
+    public ResponseEntity<EnclosureDTO> removeAnimalFromEnclosure(@PathVariable UUID id, @PathVariable UUID animalId) {
+        Optional<Enclosure> enclosureOpt = enclosureRepository.findById(new EnclosureId(id));
+        Optional<Animal> animalOpt = animalRepository.findById(new AnimalId(animalId));
+
+        if (enclosureOpt.isPresent() && animalOpt.isPresent()) {
+            Enclosure enclosure = enclosureOpt.get();
+            Animal animal = animalOpt.get();
+
+            if (!enclosure.removeAnimal(animal)) {
+                return ResponseEntity.badRequest().body(enclosureMapper.toDto(enclosure));
+            }
+
+            animal.removeFromEnclosure();
+            animalRepository.save(animal);
+            enclosureRepository.save(enclosure);
+            return ResponseEntity.ok(enclosureMapper.toDto(enclosure));
+        }
+        return ResponseEntity.notFound().build();
+    }
 }
-//    @PutMapping("/{id}/clean")
-//    @Operation(summary = "Произвести уборку в вольере")
-//    public ResponseEntity<EnclosureDTO> cleanEnclosure(@PathVariable UUID id) {
-//        Optional<Enclosure> enclosureOpt = enclosureRepository.findById(new EnclosureId(id));
-//        if (enclosureOpt.isPresent()) {
-//            Enclosure enclosure = enclosureOpt.get();
-//            enclosure.clean();
-//            enclosureRepository.save(enclosure);
-//            return ResponseEntity.ok(enclosureMapper.toDto(enclosure));
-//        }
-//        return ResponseEntity.notFound().buil
