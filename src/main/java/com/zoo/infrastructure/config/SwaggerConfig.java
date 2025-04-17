@@ -1,7 +1,6 @@
 package com.zoo.infrastructure.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,9 +14,6 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("Zoo Management API")
                         .description("API для управления зоопарком, разработанная по принципам DDD и Clean Architecture")
-                        .version("1.0.0")
-                        .contact(new Contact()
-                                .name("Zoo Administration")
-                                .email("admin@zoo.com")));
+                        .version("1.0.0"));
     }
 }
