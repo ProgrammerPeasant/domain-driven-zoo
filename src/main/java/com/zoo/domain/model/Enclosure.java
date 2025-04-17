@@ -12,10 +12,10 @@ import java.util.UUID;
 @Getter
 public class Enclosure {
     private final EnclosureId id;
-    private EnclosureType type;
-    private double size;
-    private int maxCapacity;
-    private List<Animal> animals;
+    private final EnclosureType type;
+    private final double size;
+    private final int maxCapacity;
+    private final List<Animal> animals;
     private boolean cleaningNeeded;
 
     public Enclosure(EnclosureType type, double size, int maxCapacity) {
@@ -32,8 +32,6 @@ public class Enclosure {
             return false;
         }
 
-        // Проверка на совместимость типа вольера с видом животного
-        // (в реальном приложении здесь была бы более сложная логика)
         if (!isCompatible(animal)) {
             return false;
         }
@@ -77,7 +75,6 @@ public class Enclosure {
             case AQUARIUM -> animal.getSpecies().contains("Fish") ||
                     animal.getSpecies().contains("Shark") ||
                     animal.getSpecies().contains("Dolphin");
-            default -> false;
         };
     }
 }
