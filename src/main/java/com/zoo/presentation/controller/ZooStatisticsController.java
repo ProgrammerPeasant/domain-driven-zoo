@@ -22,16 +22,7 @@ public class ZooStatisticsController {
     @GetMapping
     @Operation(summary = "Получить полную статистику зоопарка")
     public ResponseEntity<StatisticsDTO> getZooStatistics() {
-        StatisticsDTO statistics = new StatisticsDTO(
-                zooStatisticsService.getTotalAnimalCount(),
-                zooStatisticsService.getHealthyAnimalCount(),
-                zooStatisticsService.getSickAnimalCount(),
-                zooStatisticsService.getAnimalCountBySpecies(),
-                zooStatisticsService.getTotalEnclosureCount(),
-                zooStatisticsService.getAvailableEnclosureCount(),
-                zooStatisticsService.getEnclosureCountByType(),
-                (Double) zooStatisticsService.getFullStatistics().get("occupancyRate")
-        );
+        StatisticsDTO statistics = zooStatisticsService.getFullStatistics();
         return ResponseEntity.ok(statistics);
     }
 }
