@@ -70,7 +70,7 @@ public class AnimalController {
         Optional<Animal> animalOpt = animalRepository.findById(new AnimalId(id));
         if (animalOpt.isPresent()) {
             Animal animal = animalOpt.get();
-            animal.removeFromEnclosure(); // Удаляем связь с вольером
+            animal.removeFromEnclosure();
             animalRepository.delete(animal);
             return ResponseEntity.noContent().build();
         }
