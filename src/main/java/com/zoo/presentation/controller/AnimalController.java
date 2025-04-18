@@ -2,11 +2,10 @@ package com.zoo.presentation.controller;
 
 import com.zoo.application.dto.AnimalDTO;
 import com.zoo.application.mapper.AnimalMapper;
+import com.zoo.application.service.AnimalService;
 import com.zoo.domain.model.Animal;
 import com.zoo.domain.repository.AnimalRepository;
 import com.zoo.domain.valueobject.AnimalId;
-import com.zoo.domain.valueobject.Food;
-import com.zoo.domain.valueobject.Gender;
 import com.zoo.presentation.api.CreateAnimalRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,10 +23,12 @@ import java.util.UUID;
 public class AnimalController {
     private final AnimalRepository animalRepository;
     private final AnimalMapper animalMapper;
+    private final AnimalService animalService;
 
-    public AnimalController(AnimalRepository animalRepository, AnimalMapper animalMapper) {
+    public AnimalController(AnimalRepository animalRepository, AnimalMapper animalMapper, AnimalService animalService) {
         this.animalRepository = animalRepository;
         this.animalMapper = animalMapper;
+        this.animalService = animalService;
     }
 
     @GetMapping
@@ -49,19 +50,8 @@ public class AnimalController {
     @PostMapping
     @Operation(summary = "Добавить новое животное")
     public ResponseEntity<AnimalDTO> createAnimal(@RequestBody CreateAnimalRequest request) {
-        Food favoriteFood = new Food(request.getFavoriteFoodName(),
-                Food.FoodType.valueOf(request.getFavoriteFoodType()));
-
-        Animal animal = new Animal(
-                request.getSpecies(),
-                request.getName(),
-                request.getBirthDate(),
-                Gender.valueOf(request.getGender()),
-                favoriteFood
-        );
-
-        Animal savedAnimal = animalRepository.save(animal);
-        return new ResponseEntity<>(animalMapper.toDto(savedAnimal), HttpStatus.CREATED);
+        AnimalDTO animalDto = animalService.createAnimal(request);
+        return new ResponseEntity<>(animalDto, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
@@ -70,7 +60,7 @@ public class AnimalController {
         Optional<Animal> animalOpt = animalRepository.findById(new AnimalId(id));
         if (animalOpt.isPresent()) {
             Animal animal = animalOpt.get();
-            animal.removeFromEnclosure(); // Удаляем связь с вольером
+            animal.removeFromEnclosure();
             animalRepository.delete(animal);
             return ResponseEntity.noContent().build();
         }

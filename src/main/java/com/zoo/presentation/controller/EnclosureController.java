@@ -2,6 +2,7 @@ package com.zoo.presentation.controller;
 
 import com.zoo.application.dto.EnclosureDTO;
 import com.zoo.application.mapper.EnclosureMapper;
+import com.zoo.application.service.AnimalTransferService;
 import com.zoo.domain.model.Animal;
 import com.zoo.domain.model.Enclosure;
 import com.zoo.domain.repository.AnimalRepository;
@@ -28,15 +29,18 @@ public class EnclosureController {
     private final EnclosureRepository enclosureRepository;
     private final EnclosureMapper enclosureMapper;
     private final AnimalRepository animalRepository;
+    private final AnimalTransferService animalTransferService;
 
     public EnclosureController(
             EnclosureRepository enclosureRepository,
             EnclosureMapper enclosureMapper,
-            AnimalRepository animalRepository
+            AnimalRepository animalRepository,
+            AnimalTransferService animalTransferService
     ) {
         this.enclosureRepository = enclosureRepository;
         this.enclosureMapper = enclosureMapper;
         this.animalRepository = animalRepository;
+        this.animalTransferService = animalTransferService;
     }
 
     @GetMapping
@@ -94,7 +98,6 @@ public class EnclosureController {
         if (enclosureOpt.isPresent()) {
             Enclosure enclosure = enclosureOpt.get();
 
-            // Проверка, что в вольере нет животных
             if (!enclosure.getAnimals().isEmpty()) {
                 return ResponseEntity.badRequest().build();
             }
@@ -159,5 +162,21 @@ public class EnclosureController {
             return ResponseEntity.ok(enclosureMapper.toDto(enclosure));
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/transfer")
+    @Operation(summary = "Перемещение животного из одного вольера в другой")
+    public ResponseEntity<String> transferAnimal(
+            @RequestParam UUID animalId,
+            @RequestParam UUID targetEnclosureId
+    ) {
+        boolean transferSuccess = animalTransferService.transferAnimal(animalId, targetEnclosureId);
+
+        if (transferSuccess) {
+            return ResponseEntity.ok("Животное успешно перемещено.");
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Перемещение животного не удалось. Проверьте идентификаторы животного и вольера.");
+        }
     }
 }

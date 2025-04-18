@@ -1,5 +1,6 @@
 package com.zoo.application.service;
 
+import com.zoo.application.dto.StatisticsDTO;
 import com.zoo.domain.model.Animal;
 import com.zoo.domain.model.Enclosure;
 import com.zoo.domain.repository.AnimalRepository;
@@ -71,19 +72,19 @@ public class ZooStatisticsService {
         return result;
     }
 
-    public Map<String, Object> getFullStatistics() {
-        Map<String, Object> statistics = new HashMap<>();
+    public StatisticsDTO getFullStatistics() {
+        StatisticsDTO statistics = new StatisticsDTO();
 
-        statistics.put("totalAnimalCount", getTotalAnimalCount());
-        statistics.put("healthyAnimalCount", getHealthyAnimalCount());
-        statistics.put("sickAnimalCount", getSickAnimalCount());
-        statistics.put("animalsBySpecies", getAnimalCountBySpecies());
+        statistics.setTotalAnimalCount(getTotalAnimalCount());
+        statistics.setHealthyAnimalCount(getHealthyAnimalCount());
+        statistics.setSickAnimalCount(getSickAnimalCount());
+        statistics.setAnimalsBySpecies(getAnimalCountBySpecies());
 
-        statistics.put("totalEnclosureCount", getTotalEnclosureCount());
-        statistics.put("availableEnclosureCount", getAvailableEnclosureCount());
-        statistics.put("enclosuresByType", getEnclosureCountByType());
+        statistics.setTotalEnclosureCount(getTotalEnclosureCount());
+        statistics.setAvailableEnclosureCount(getAvailableEnclosureCount());
+        statistics.setEnclosuresByType(getEnclosureCountByType());
 
-        statistics.put("occupancyRate", calculateOccupancyRate());
+        statistics.setOccupancyRate(calculateOccupancyRate());
 
         return statistics;
     }
